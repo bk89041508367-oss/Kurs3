@@ -6,8 +6,8 @@ from telegram import Bot
 from telegram.constants import ParseMode
 
 # === КОНФИГУРАЦИЯ ===
-BOT_TOKEN = os.environ.get('BOT_TOKEN', 'ВАШ_ТОКЕН')
-CHANNEL_ID = os.environ.get('CHANNEL_ID', '@ВАШ_КАНАЛ')
+BOT_TOKEN = os.environ.get('BOT_TOKEN', '7984110017:AAEopXIz-0wFOsXlOeWeLvJTzlijxyPLyrU')
+CHANNEL_ID = os.environ.get('CHANNEL_ID', '@FinRadar67')
 
 # === ФУНКЦИИ ДЛЯ КУРСОВ ===
 def get_usd_rub():
@@ -217,3 +217,4 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
