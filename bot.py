@@ -1,102 +1,26 @@
+import os
 import requests
 import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta
 from telegram import Bot
 from telegram.constants import ParseMode
 
 # === КОНФИГУРАЦИЯ ===
-BOT_TOKEN = "7984110017:AAEopXIz-0wFOsXlOeWeLvJTzlijxyPLyrU"  # Ваш токен
-CHANNEL_ID = "@FinRadar67"  # Ваш канал
+BOT_TOKEN = os.environ.get('BOT_TOKEN', 'ВАШ_ТОКЕН')
+CHANNEL_ID = os.environ.get('CHANNEL_ID', '@ВАШ_КАНАЛ')
 
-# Переменные для хранения предыдущих значений
-previous_rates = {}
-
+# === ФУНКЦИИ ДЛЯ КУРСОВ ===
 def get_usd_rub():
-    """Получает курс USD/RUB с изменением"""
+    """Получает курс USD/RUB"""
     try:
         url = "https://www.cbr-xml-daily.ru/daily_json.js"
         response = requests.get(url, timeout=10)
         data = response.json()
         current_rate = data['Valute']['USD']['Value']
         previous_rate = data['Valute']['USD']['Previous']
-        
-        # Расчет изменения
-        change = current_rate - previous_rate
-        change_percent = (change / previous_rate) * 100
-        
-        # Сохраняем для следующего сравнения
-        previous_rates['usd'] = current_rate
-        
-        if change_percent > 0:
-            change_str = f"(+{change_percent:+.1f}%)"
-        else:
-            change_str = f"({change_percent:+.1f}%)"
-            
+        change = ((current_rate - previous_rate) / previous_rate) * 100
+        change_str = f"({change:+.1f}%)"
         return f"{current_rate:.2f} ₽ {change_str}"
-    except:
-        return "❌ Ошибка"
-
-def get_btc_usd():
-    """Получаем курс BTC через расчетное значение"""
-    try:
-        # Используем фиксированное значение как fallback
-        btc_price = 110000  # Примерное значение
-        return f"{btc_price/1000:.1f}K"
-    except:
-        return "❌"
-
-def get_btc_rub():
-    """Получаем курс BTC/RUB через USD/RUB"""
-    try:
-        # Получаем актуальный USD/RUB
-        url = "https://www.cbr-xml-daily.ru/daily_json.js"
-        response = requests.get(url, timeout=10)
-        data = response.json()
-        usd_rate = data['Valute']['USD']['Value']
-        
-        # BTC в USD (примерно)
-        btc_usd = 110000
-        btc_rub = btc_usd * usd_rate
-        
-        return f"{btc_rub:,.0f} ₽".replace(",", " ")
-    except:
-        return "❌ Ошибка"
-
-def get_ton_rub():
-    """Получаем курс TON через USD/RUB"""
-    try:
-        # Получаем актуальный USD/RUB
-        url = "https://www.cbr-xml-daily.ru/daily_json.js"
-        response = requests.get(url, timeout=10)
-        data = response.json()
-        usd_rate = data['Valute']['USD']['Value']
-        
-        # TON в USD (примерно)
-        ton_usd = 6.50  # Актуальный курс
-        ton_rub = ton_usd * usd_rate
-        
-        return f"{ton_rub:.2f} ₽"
-    except:
-        return "❌ Ошибка"
-
-def get_gold_rub():
-    """Получает курс золота в рублях"""
-    try:
-        # Курс золота в USD (примерный)
-        gold_usd = 1950.50
-        
-        # Получаем курс USD/RUB
-        usd_response = requests.get("https://www.cbr-xml-daily.ru/daily_json.js", timeout=10)
-        usd_data = usd_response.json()
-        usd_rate = usd_data['Valute']['USD']['Value']
-        
-        # Конвертируем в рубли
-        gold_rub = gold_usd * usd_rate
-        
-        # Заглушка для изменений
-        change_str = "(+0.0%)"
-        
-        return f"{gold_rub:,.0f} ₽ {change_str}".replace(",", " ")
     except:
         return "❌ Ошибка"
 
@@ -108,16 +32,8 @@ def get_eur_rub():
         data = response.json()
         current_rate = data['Valute']['EUR']['Value']
         previous_rate = data['Valute']['EUR']['Previous']
-        
-        # Расчет изменения
-        change = current_rate - previous_rate
-        change_percent = (change / previous_rate) * 100
-        
-        if change_percent > 0:
-            change_str = f"(+{change_percent:+.1f}%)"
-        else:
-            change_str = f"({change_percent:+.1f}%)"
-            
+        change = ((current_rate - previous_rate) / previous_rate) * 100
+        change_str = f"({change:+.1f}%)"
         return f"{current_rate:.2f} ₽ {change_str}"
     except:
         return "❌ Ошибка"
@@ -130,16 +46,8 @@ def get_cny_rub():
         data = response.json()
         current_rate = data['Valute']['CNY']['Value']
         previous_rate = data['Valute']['CNY']['Previous']
-        
-        # Расчет изменения
-        change = current_rate - previous_rate
-        change_percent = (change / previous_rate) * 100
-        
-        if change_percent > 0:
-            change_str = f"(+{change_percent:+.1f}%)"
-        else:
-            change_str = f"({change_percent:+.1f}%)"
-            
+        change = ((current_rate - previous_rate) / previous_rate) * 100
+        change_str = f"({change:+.1f}%)"
         return f"{current_rate:.2f} ₽ {change_str}"
     except:
         return "❌ Ошибка"
@@ -152,16 +60,8 @@ def get_thb_rub():
         data = response.json()
         current_rate = data['Valute']['THB']['Value']
         previous_rate = data['Valute']['THB']['Previous']
-        
-        # Расчет изменения
-        change = current_rate - previous_rate
-        change_percent = (change / previous_rate) * 100
-        
-        if change_percent > 0:
-            change_str = f"(+{change_percent:+.1f}%)"
-        else:
-            change_str = f"({change_percent:+.1f}%)"
-            
+        change = ((current_rate - previous_rate) / previous_rate) * 100
+        change_str = f"({change:+.1f}%)"
         return f"{current_rate:.4f} ₽ {change_str}"
     except:
         return "❌ Ошибка"
@@ -172,53 +72,64 @@ def get_vnd_rub():
         url = "https://www.cbr-xml-daily.ru/daily_json.js"
         response = requests.get(url, timeout=10)
         data = response.json()
-        
         usd_rate = data['Valute']['USD']['Value']
         rub_per_1000vnd = (usd_rate / 23000) * 1000
-        
         return f"1000₫ = {rub_per_1000vnd:.2f} ₽"
     except:
         return "❌ Ошибка"
 
+def get_gold_rub():
+    """Получает курс золота в рублях"""
+    try:
+        # Курс золота в USD
+        gold_usd = 1950.50
+        
+        # Получаем курс USD/RUB
+        url = "https://www.cbr-xml-daily.ru/daily_json.js"
+        response = requests.get(url, timeout=10)
+        data = response.json()
+        usd_rate = data['Valute']['USD']['Value']
+        
+        # Конвертируем в рубли
+        gold_rub = gold_usd * usd_rate
+        return f"{gold_rub:,.0f} ₽".replace(",", " ")
+    except:
+        return "❌ Ошибка"
+
 def create_message():
-    """Создает текст сообщения с новыми валютами"""
+    """Создает текст сообщения только с валютами"""
     usd = get_usd_rub()
     eur = get_eur_rub()
     cny = get_cny_rub()
     thb = get_thb_rub()
     vnd = get_vnd_rub()
-    btc_usd = get_btc_usd()
-    btc_rub = get_btc_rub()
-    ton = get_ton_rub()
     gold = get_gold_rub()
     
     # Время
     msk_time = datetime.now().strftime("%H:%M:%S %d.%m.%Y")
-    from datetime import timedelta
     irk_time = (datetime.now() + timedelta(hours=5)).strftime("%H:%M:%S %d.%m.%Y")
     
-    usd_value = usd.split()[0]
-    ton_value = ton.split()[0]
+    # Извлекаем числовые значения для первой строки
+    usd_value = usd.split()[0] if '❌' not in usd else '❌'
+    eur_value = eur.split()[0] if '❌' not in eur else '❌'
     
     message = f"""
-💵USD: {usd_value} 💎TON: {ton_value} 
-₿BTC: {btc_usd}$
+💵USD: {usd_value} 💶EUR: {eur_value}
 
-📊 АКТУАЛЬНЫЕ КУРСЫ
+📊 АКТУАЛЬНЫЕ КУРСЫ (ЦБ РФ)
 
 💵 USD/RUB: {usd}
 💶 EUR/RUB: {eur}
 🇨🇳 CNY/RUB: {cny}
 🇹🇭 THB/RUB: {thb}
 🇻🇳 VND/RUB: {vnd}
-
-₿  BTC/RUB: {btc_rub}  
-💎 TON/RUB: {ton}
-🥇 Золото/RUB: {gold}
+🥇 Золото: {gold}
 
 Последнее обновление:
 🕐 Москва: {msk_time}
 🕐 Иркутск: {irk_time}
+
+*Криптовалюты временно отключены*
 """
     return message
 
@@ -240,13 +151,8 @@ async def check_bot_connection():
 # === ОСНОВНАЯ ЛОГИКА ===
 async def main():
     print("=" * 60)
-    print("💰 TELEGRAM БОТ ДЛЯ КУРСОВ ВАЛЮТ")
+    print("💰 TELEGRAM БОТ ДЛЯ КУРСОВ ВАЛЮТ (УПРОЩЕННАЯ ВЕРСИЯ)")
     print("=" * 60)
-    
-    # Проверяем конфигурацию
-    if "ВАШ_ТОКЕН" in BOT_TOKEN or "ваш_канал" in CHANNEL_ID:
-        print("❌ ЗАМЕНИТЕ BOT_TOKEN и CHANNEL_ID на реальные значения!")
-        return
     
     # Проверяем подключение
     if not await check_bot_connection():
@@ -256,29 +162,58 @@ async def main():
     bot = Bot(token=BOT_TOKEN)
     
     print("🚀 Отправляем сообщение в канал...")
-    try:
-        message = await bot.send_message(
-            chat_id=CHANNEL_ID,
-            text=create_message(),
-            parse_mode=ParseMode.MARKDOWN
-        )
-        
-        print("✅ Сообщение отправлено! Запускаем автообновление...")
-        
-        while True:
-            await asyncio.sleep(300)  # 5 минут
-            await bot.edit_message_text(
-                chat_id=CHANNEL_ID,
-                message_id=message.message_id,
-                text=create_message(),
-                parse_mode=ParseMode.MARKDOWN
-            )
-            print(f"✅ Обновлено: {datetime.now().strftime('%H:%M:%S')}")
+    
+    retry_count = 0
+    max_retries = 3
+    
+    while True:
+        try:
+            if retry_count == 0:
+                # Первая отправка сообщения
+                message = await bot.send_message(
+                    chat_id=CHANNEL_ID,
+                    text=create_message(),
+                    parse_mode=ParseMode.MARKDOWN
+                )
+                print("✅ Сообщение отправлено! Запускаем автообновление...")
+            else:
+                # Повторная отправка после ошибки
+                message = await bot.send_message(
+                    chat_id=CHANNEL_ID,
+                    text=create_message(),
+                    parse_mode=ParseMode.MARKDOWN
+                )
+                print("✅ Переподключение успешно! Сообщение отправлено зановo.")
+                retry_count = 0
             
-    except Exception as e:
-        print(f"❌ Ошибка: {e}")
+            # Основной цикл обновления
+            while retry_count < max_retries:
+                try:
+                    await asyncio.sleep(300)  # 5 минут
+                    await bot.edit_message_text(
+                        chat_id=CHANNEL_ID,
+                        message_id=message.message_id,
+                        text=create_message(),
+                        parse_mode=ParseMode.MARKDOWN
+                    )
+                    print(f"✅ Обновлено: {datetime.now().strftime('%H:%M:%S')}")
+                    retry_count = 0
+                    
+                except Exception as e:
+                    print(f"❌ Ошибка при обновлении: {e}")
+                    retry_count += 1
+                    if retry_count >= max_retries:
+                        print("🔄 Превышено количество попыток, перезапускаем соединение...")
+                        break
+                    else:
+                        print(f"🔄 Повторная попытка {retry_count}/{max_retries} через 30 секунд...")
+                        await asyncio.sleep(30)
+            
+        except Exception as e:
+            print(f"❌ Критическая ошибка: {e}")
+            print("🔄 Перезапуск через 60 секунд...")
+            await asyncio.sleep(60)
+            retry_count = 0 if retry_count >= max_retries else retry_count + 1
 
 if __name__ == "__main__":
-
     asyncio.run(main())
-
