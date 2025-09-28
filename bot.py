@@ -21,8 +21,12 @@ if "RENDER" in os.environ:
     server_thread.start()
 
 # === КОНФИГУРАЦИЯ ===
-BOT_TOKEN = os.environ.get('BOT_TOKEN', '7984110017:AAEopXIz-0wFOsXlOeWeLvJTzlijxyPLyrU')
-CHANNEL_ID = os.environ.get('CHANNEL_ID', '@FinRadar67')
+BOT_TOKEN = os.environ.get('BOT_TOKEN')
+CHANNEL_ID = os.environ.get('CHANNEL_ID')
+
+if not BOT_TOKEN or not CHANNEL_ID:
+    print("❌ Установите BOT_TOKEN и CHANNEL_ID в переменных окружения")
+    exit(1)
 
 # ПРОВЕРКА ПЕРЕМЕННЫХ
 if not BOT_TOKEN or BOT_TOKEN == 'BOT_TOKEN':
@@ -243,6 +247,7 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
 
 
