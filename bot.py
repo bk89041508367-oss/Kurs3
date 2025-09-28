@@ -21,7 +21,7 @@ if "RENDER" in os.environ:
     server_thread.start()
 
 # === КОНФИГУРАЦИЯ ===
-BOT_TOKEN = os.environ.get('BOT_TOKEN', 'BOT_TOKEN')
+BOT_TOKEN = os.environ.get('BOT_TOKEN', '7984110017:AAEopXIz-0wFOsXlOeWeLvJTzlijxyPLyrU')
 CHANNEL_ID = os.environ.get('CHANNEL_ID', '@FinRadar67')
 
 # ПРОВЕРКА ПЕРЕМЕННЫХ
@@ -243,5 +243,6 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
 
