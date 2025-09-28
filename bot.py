@@ -5,20 +5,31 @@ from datetime import datetime, timedelta
 from telegram import Bot
 from telegram.constants import ParseMode
 
-# === ОБХОД ДЛЯ RENDER WEB SERVICES ===
-if "RENDER" in os.environ:
-    import http.server
-    import socketserver
-    from threading import Thread
-    
-    def run_dummy_server():
-        PORT = 8000
-        with socketserver.TCPServer(("", PORT), http.server.SimpleHTTPRequestHandler) as httpd:
-            print(f"✅ HTTP server running on port {PORT}")
-            httpd.serve_forever()
-    
-    server_thread = Thread(target=run_dummy_server, daemon=True)
-    server_thread.start()
+print("🚀 Простая версия бота запускается...")
+
+# Простая конфигурация (для теста)
+BOT_TOKEN = "7984110017:AAEopXIz-0wFOsXlOeWeLvJTzlijxyPLyrU"
+CHANNEL_ID = "@FinRadar67"
+
+async def main():
+    try:
+        bot = Bot(token=BOT_TOKEN)
+        me = await bot.get_me()
+        print(f"✅ Бот подключен: @{me.username}")
+        
+        # Простое сообщение для теста
+        message = await bot.send_message(
+            chat_id=CHANNEL_ID,
+            text="🤖 Бот запущен на Render.com!\nТестовая версия работает ✅",
+            parse_mode=ParseMode.MARKDOWN
+        )
+        print("✅ Тестовое сообщение отправлено!")
+        
+    except Exception as e:
+        print(f"❌ Ошибка: {e}")
+
+if __name__ == "__main__":
+    asyncio.run(main())
 
 # === КОНФИГУРАЦИЯ ===
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
@@ -261,6 +272,7 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
 
 
