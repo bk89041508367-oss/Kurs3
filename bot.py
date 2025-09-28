@@ -8,7 +8,7 @@ from telegram.constants import ParseMode
 print("🚀 Простая версия бота запускается...")
 
 # Простая конфигурация (для теста)
-BOT_TOKEN = "7984110017:AAEopXIz-0wFOsXlOeWeLvJTzlijxyPLyrU"
+BOT_TOKEN = ",,,"
 CHANNEL_ID = "@FinRadar67"
 
 async def main():
@@ -272,6 +272,7 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
 
 
