@@ -24,18 +24,25 @@ if "RENDER" in os.environ:
 BOT_TOKEN = os.environ.get('BOT_TOKEN')
 CHANNEL_ID = os.environ.get('CHANNEL_ID')
 
-if not BOT_TOKEN or not CHANNEL_ID:
-    print("❌ Установите BOT_TOKEN и CHANNEL_ID в переменных окружения")
+# === ПРОВЕРКА ПЕРЕМЕННЫХ ОКРУЖЕНИЯ ===
+if not BOT_TOKEN:
+    print("❌ ОШИБКА: Не установлена переменная BOT_TOKEN")
+    print("📋 Как исправить:")
+    print("1. В Render.com зайдите в Settings → Environment Variables")
+    print("2. Добавьте переменную BOT_TOKEN с вашим токеном бота")
+    print("3. Перезапустите сервис")
     exit(1)
 
-# ПРОВЕРКА ПЕРЕМЕННЫХ
-if not BOT_TOKEN or BOT_TOKEN == 'BOT_TOKEN':
-    print("❌ Ошибка: Не установлен BOT_TOKEN")
+if not CHANNEL_ID:
+    print("❌ ОШИБКА: Не установлена переменная CHANNEL_ID")
+    print("📋 Как исправить:")
+    print("1. В Render.com зайдите в Settings → Environment Variables")
+    print("2. Добавьте переменную CHANNEL_ID с username вашего канала")
+    print("3. Перезапустите сервис")
     exit(1)
 
-if not CHANNEL_ID or CHANNEL_ID == '@FinRadar67':
-    print("❌ Ошибка: Не установлен CHANNEL_ID")
-    exit(1)
+print("✅ Конфигурация загружена успешно!")
+print(f"📊 Канал: {CHANNEL_ID}")
 
 # === ФУНКЦИИ ДЛЯ КУРСОВ ===
 def get_usd_rub():
@@ -49,10 +56,9 @@ def get_usd_rub():
         change = ((current_rate - previous_rate) / previous_rate) * 100
         change_str = f"({change:+.1f}%)"
         return f"{current_rate:.2f} ₽ {change_str}"
-    except:
+    except Exception as e:
+        print(f"❌ Ошибка получения USD: {e}")
         return "❌ Ошибка"
-
-# ... ОСТАЛЬНЫЕ ВАШИ ФУНКЦИИ ОСТАЮТСЯ БЕЗ ИЗМЕНЕНИЙ ...
 
 def get_eur_rub():
     """Получает курс EUR/RUB"""
@@ -65,7 +71,8 @@ def get_eur_rub():
         change = ((current_rate - previous_rate) / previous_rate) * 100
         change_str = f"({change:+.1f}%)"
         return f"{current_rate:.2f} ₽ {change_str}"
-    except:
+    except Exception as e:
+        print(f"❌ Ошибка получения EUR: {e}")
         return "❌ Ошибка"
 
 def get_cny_rub():
@@ -79,7 +86,8 @@ def get_cny_rub():
         change = ((current_rate - previous_rate) / previous_rate) * 100
         change_str = f"({change:+.1f}%)"
         return f"{current_rate:.2f} ₽ {change_str}"
-    except:
+    except Exception as e:
+        print(f"❌ Ошибка получения CNY: {e}")
         return "❌ Ошибка"
 
 def get_thb_rub():
@@ -93,7 +101,8 @@ def get_thb_rub():
         change = ((current_rate - previous_rate) / previous_rate) * 100
         change_str = f"({change:+.1f}%)"
         return f"{current_rate:.4f} ₽ {change_str}"
-    except:
+    except Exception as e:
+        print(f"❌ Ошибка получения THB: {e}")
         return "❌ Ошибка"
 
 def get_vnd_rub():
@@ -105,7 +114,8 @@ def get_vnd_rub():
         usd_rate = data['Valute']['USD']['Value']
         rub_per_1000vnd = (usd_rate / 23000) * 1000
         return f"1000₫ = {rub_per_1000vnd:.2f} ₽"
-    except:
+    except Exception as e:
+        print(f"❌ Ошибка получения VND: {e}")
         return "❌ Ошибка"
 
 def get_gold_rub():
@@ -123,7 +133,8 @@ def get_gold_rub():
         # Конвертируем в рубли
         gold_rub = gold_usd * usd_rate
         return f"{gold_rub:,.0f} ₽".replace(",", " ")
-    except:
+    except Exception as e:
+        print(f"❌ Ошибка получения золота: {e}")
         return "❌ Ошибка"
 
 def create_message():
@@ -181,11 +192,14 @@ async def check_bot_connection():
 # === ОСНОВНАЯ ЛОГИКА ===
 async def main():
     print("=" * 60)
-    print("💰 TELEGRAM БОТ ДЛЯ КУРСОВ ВАЛЮТ (УПРОЩЕННАЯ ВЕРСИЯ)")
+    print("💰 TELEGRAM БОТ ДЛЯ КУРСОВ ВАЛЮТ")
+    print("=" * 60)
+    print("🔒 Безопасная версия с переменными окружения")
     print("=" * 60)
     
     # Проверяем подключение
     if not await check_bot_connection():
+        print("❌ Не удалось подключиться к Telegram")
         return
     
     # Запускаем основную логику
@@ -213,7 +227,7 @@ async def main():
                     text=create_message(),
                     parse_mode=ParseMode.MARKDOWN
                 )
-                print("✅ Переподключение успешно! Сообщение отправлено зановo.")
+                print("✅ Переподключение успешно! Сообщение отправлено заново.")
                 retry_count = 0
             
             # Основной цикл обновления
