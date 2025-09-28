@@ -5,9 +5,33 @@ from datetime import datetime, timedelta
 from telegram import Bot
 from telegram.constants import ParseMode
 
+# === ОБХОД ДЛЯ RENDER WEB SERVICES ===
+if "RENDER" in os.environ:
+    import http.server
+    import socketserver
+    from threading import Thread
+    
+    def run_dummy_server():
+        PORT = 8000
+        with socketserver.TCPServer(("", PORT), http.server.SimpleHTTPRequestHandler) as httpd:
+            print(f"✅ HTTP server running on port {PORT}")
+            httpd.serve_forever()
+    
+    server_thread = Thread(target=run_dummy_server, daemon=True)
+    server_thread.start()
+
 # === КОНФИГУРАЦИЯ ===
-BOT_TOKEN = os.environ.get('BOT_TOKEN', '7984110017:AAEopXIz-0wFOsXlOeWeLvJTzlijxyPLyrU')
+BOT_TOKEN = os.environ.get('BOT_TOKEN', 'BOT_TOKEN')
 CHANNEL_ID = os.environ.get('CHANNEL_ID', '@FinRadar67')
+
+# ПРОВЕРКА ПЕРЕМЕННЫХ
+if not BOT_TOKEN or BOT_TOKEN == 'BOT_TOKEN':
+    print("❌ Ошибка: Не установлен BOT_TOKEN")
+    exit(1)
+
+if not CHANNEL_ID or CHANNEL_ID == '@FinRadar67':
+    print("❌ Ошибка: Не установлен CHANNEL_ID")
+    exit(1)
 
 # === ФУНКЦИИ ДЛЯ КУРСОВ ===
 def get_usd_rub():
@@ -23,6 +47,8 @@ def get_usd_rub():
         return f"{current_rate:.2f} ₽ {change_str}"
     except:
         return "❌ Ошибка"
+
+# ... ОСТАЛЬНЫЕ ВАШИ ФУНКЦИИ ОСТАЮТСЯ БЕЗ ИЗМЕНЕНИЙ ...
 
 def get_eur_rub():
     """Получает курс EUR/RUB"""
@@ -217,4 +243,5 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
+
 
